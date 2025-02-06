@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react"
-import { getUsers } from "../services/userService"
-
 interface User {
   id:number
   name: string
@@ -41,19 +38,16 @@ function UserList() {
         <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
             <th scope="col" className="px-6 py-3">
-              Nombre
+              Titulo
             </th>
             <th scope="col" className="px-6 py-3">
-              Apellido
+              Inicio
             </th>
             <th scope="col" className="px-6 py-3">
-              Email
+              Fin
             </th>
             <th scope="col" className="px-6 py-3">
-              Rol
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Curso
+              Categoria
             </th>
           </tr>
         </thead>
