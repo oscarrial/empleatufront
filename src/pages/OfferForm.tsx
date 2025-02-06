@@ -1,124 +1,129 @@
-import  { ChangeEvent, FormEvent, useEffect, useState } from 'react'
-import { OfferService } from '../services/offer.service'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import Offer from '../models/Offer'
+import { OfferService } from '../services/offer.service'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Temporal } from 'temporal-polyfill'
 
+// - formulario de creación de 1 oferta
+// -- Actualizar una oferta
+
+
 function OfferForm() {
-    const now = Temporal.Now.plainDateISO()
-    const threeMonthLater = now.add({ months: 3 }).toString().slice(0, 16)
-    const [form, setForm] = useState<Partial<Offer>>({
-        title: '',
-        description: '',
-        active: true,
-        contactEmail: '',
-        location: '',
-        published: new Date().toISOString().slice(0, 16),
-        expired: threeMonthLater,
-        idCategory: undefined
-    })
+  const now = Temporal.Now.plainDateTimeISO()
+  const threeMonthLater = now.add({months: 3}).toString().slice(0,16)
 
-    const { id } = useParams()
-    const [error, setError] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
-    const navigate = useNavigate()
+  //const threeMonthLater = new Date( new Date().setMonth(new Date().getMonth() + 3) )
+  //                    .toISOString().slice(0,16)
+  const [form, setForm] = useState<Partial<Offer>>({
+    title: '',
+    description: '',
+    active: true,
+    contactEmail: '',
+    location: '',
+    published: new Date().toISOString().slice(0,16), //2007-11-03T16:18:05Z ->  2007-11-03T16:18
+    expired: threeMonthLater,
+    idCategory: undefined
+  })
 
+  const {id} = useParams()
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
-    useEffect(() => {
-        if (id) {
-            setLoading(true)
-            OfferService.getById(Number(id))
-                .then(data => setForm({
-                    ...data,
-                    published: new Date(form.published || '').toISOString().slice(0, 16),
-                    expired: new Date(form.published || '').toISOString().slice(0, 16)
-                }))
-                .catch((error) => setError(error.message))
-                .finally(() => setLoading(false))
-        }
-    }, [id])
+  useEffect(()=>{
+    if(id){
+      
+      setLoading(true)
+      OfferService.getById(Number(id))
+      .then(data => setForm({
+        ...data,
+        published: new Date(data.published || '').toISOString().slice(0,16),
+        expired: new Date(data.expired || '').toISOString().slice(0,16)
+      }))
+      .catch((error) => setError(error.message))
+      .finally(()=>setLoading(false))
 
-
-    const handleSubmit = (e: FormEvent) => {
-        try {
-            setLoading(true)
-            setError(null)
-            e.preventDefault()
-            const formData = {
-                ...form,
-                published: new Date(form.published || '').toISOString(),
-                expired: new Date(form.published || '').toISOString()
-            }
-            if (id) OfferService.update(Number(id), formData)
-            else OfferService.create(formData)
-
-            navigate('/offers')
-        } catch (error) {
-            setError(error instanceof Error ? error.message : 'Error desconocido')
-        } finally {
-            setLoading(false)
-        }
     }
+  }, [id])
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { value, name } = e.target
-        setForm({ ...form, [name]: value })
+  const handleSubmit=(e: FormEvent) =>{
+    try{
+      setLoading(true)
+      setError(null)
+      e.preventDefault()
+      const formData = {
+        ...form,
+        published: new Date(form.published || '').toISOString(),
+        expired: new Date(form.expired || '').toISOString()
+      }
+      if(id) OfferService.update(Number(id), formData)
+        else OfferService.create(formData)
+
+      navigate('/offers')
+    }catch(error){
+      setError(error instanceof Error ? error.message : 'Error desconocido')
+    }finally{
+      setLoading(false)
     }
+  }
 
-    const handleChangeCheckbox = (e: ChangeEvent<HTMLInputElement>) => {
-        const { checked, name } = e.target
-        setForm({ ...form, [name]: checked })
-    }
+  const handleChange = (e:ChangeEvent<HTMLInputElement>) =>{
+    const {value, name} = e.target
+    setForm({ ...form, [name]:value,  }) 
+  }
 
-    if (loading) return <p>Loading...</p>
+  const handleChangeCheckbox = (e:ChangeEvent<HTMLInputElement>) =>{
+    const {checked, name} = e.target
+    setForm({ ...form, [name]:checked,  }) 
+  }
 
-    return (
-        <div className='text-white flex flex-col'>
-            <h1>Insercion de nueva oferta</h1>
-            <form onSubmit={handleSubmit} className='flex flex-col'>
-                {error && <p>{error}</p>}
-                <label>
-                    Titulo:
-                    <input name='title' value={form.title} onChange={handleChange} required />
-                </label>
+  if(loading) return <p>Loading...</p>
 
-                <label>
-                    Descripcion:
-                    <input name='description' value={form.description} onChange={handleChange} required />
-                </label>
+  return (
+    <div className='text-white flex flex-col'>
+      <h1>Inserción de nueva oferta</h1>
+      <form onSubmit={handleSubmit} className='flex flex-col'>
+      {error && <p>{error}</p>}
+      <label>
+        Titulo: 
+        <input name="title" value={form.title} onChange={handleChange} required/>
+      </label>
 
-                <label>
-                    Email de contacto:
-                    <input name='contactEmail' value={form.contactEmail} onChange={handleChange} required />
-                </label>
+      <label>
+        Descripción: 
+        <input name="description" value={form.description} onChange={handleChange}/>
+      </label>
 
-                <label>
-                    Localización:
-                    <input name='location' value={form.location} onChange={handleChange} required />
-                </label>
+      <label>
+        Email de contacto: 
+        <input name="contactEmail" value={form.contactEmail} onChange={handleChange}/>
+      </label>
 
-                <label>
-                    Fecha publicación:
-                    <input type='datetime-local' name='published' value={form.published} onChange={handleChange} required />
-                </label>
+      <label>
+        Localización: 
+        <input name="location" value={form.location} onChange={handleChange}/>
+      </label>
 
-                <label>
-                    Fecha fin de publicación:
-                    <input type='datetime-local' name='expired' value={form.expired} onChange={handleChange} required />
-                </label>
+      <label>
+        Fecha publicación: 
+        <input type="datetime-local" name="published" value={form.published} onChange={handleChange}/>
+      </label>
 
-                <label>
-                    Activa:
-                    <input type='checkbox' name='active' value={form.expired} onChange={handleChangeCheckbox} required />
-                </label>
+      <label>
+        Fecha fin de publicación: 
+        <input type="datetime-local" name="expired" value={form.expired} onChange={handleChange}/>
+      </label>
 
+      <label>
+        Activa: 
+        <input type="checkbox" name="active" checked={form.active} onChange={handleChangeCheckbox}/>
+      </label>
 
-                <input type="datetime-local" value={form.published} />
-                <button>Guardar</button>
-            </form>
-        </div>
-    )
+      <div>id categoria ...</div>
+      <button>Guardar</button>
+      </form>
+    </div>
+  )
 }
-
 
 export default OfferForm

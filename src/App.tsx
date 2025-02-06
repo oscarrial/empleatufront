@@ -1,13 +1,13 @@
 import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Register from './pages/Register'
-import Login from './pages/Login'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import UsersList from './pages/UserList'
+import Login from './pages/Login'
+import Register from './pages/Register'
 import Profile from './pages/Profile'
+import UserList from './pages/UserList'
 import Navbar from './components/Navbar'
-import OfferList from './pages/OfferList'
-import OfferForm from './pages/OfferForm'
+import OffertList from './pages/OfferList'
+import OffertForm from './pages/OfferForm'
 import OfferDetail from './pages/OfferDetail'
 
 function App() {
@@ -15,19 +15,22 @@ function App() {
   return (
     <>
       <BrowserRouter>
+      <div className='flex flex-col h-screen'>
         <Navbar />
-        <div className='container mx-auto px-8 py-12' />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/userList" element={<UsersList />} />
-          <Route path="/offers" element={<OfferList />} />
-          <Route path="/offers/:id" element={<OfferDetail />} />
-          <Route path="/offers/new" element={<OfferForm />} />
-          <Route path="/offers/edit/:id" element={<OfferForm />} />
-        </Routes>
+        <div className='container mx-auto flex grow justify-center items-center'>
+          <Routes>
+            <Route path="/" element={<Home/>} />
+            <Route path="/login" element={<Login/>} />
+            <Route path="/register" element={<Register/>} />
+            <Route path="/profile" element={<Profile/>} />
+            <Route path="/userList" element={<UserList/>} />
+            <Route path="/offers" element={<OffertList/>} />
+            <Route path="/offers/:id" element={<OfferDetail/>} />
+            <Route path="/offers/new" element={<OffertForm/>} />
+            <Route path="/offers/edit/:id" element={<OffertForm/>} />
+          </Routes>
+        </div>
+        </div>
       </BrowserRouter>
     </>
   )
